@@ -1,0 +1,162 @@
+apiVersion: scaffolder.backstage.io/v1beta3
+kind: Template
+metadata:
+  name: onecd-create-new-github-repository
+  title: Create GitHub Repository
+  description: Create an GitHub empty repository using the domain pattern. For more information, see https://platform-docs.keyloop.io/internal/remote-content/cloud-first/products/BackstageTemplates/CreateRepo/docs/
+  tags:
+    - git-repo-ops
+    - v1
+    - rtw
+spec:
+  owner: phoenix
+  type: create
+
+  parameters:
+    - title: Select a GitHub Organization, Team, and provide a Repository Name
+      required:
+        - githubOwner
+        - githubTeam
+        - githubRepoName
+        - masterDataInternalDomain
+        - masterDataInternalSubDomain
+      properties:
+        githubOwner:
+          title: GitHub Organization
+          type: string
+          description: GitHub Organization where the repo will be created
+          enum:
+            - keyloop-platform
+        githubTeam:
+          title: Team
+          type: string
+          description: GitHub Team that will own the repo
+          ui:field: GithubOrgTeamsPicker
+          ui:options:
+            allowArbitraryValues: false
+        masterDataInternalDomain:
+          title: Master Data - Domain
+          type: string
+          description: List of Domains from Master Data Internal
+          ui:field: MasterDataInternalPicker
+          ui:options:
+            allowArbitraryValues: false
+            schema: domains
+        masterDataInternalSubDomain:
+          title: Master Data - SubDomain
+          type: string
+          description: List of SubDomains from Master Data Internal. It has to match correct Domain!
+          ui:field: MasterDataInternalPicker
+          ui:options:
+            allowArbitraryValues: false
+            schema: sub-domains
+        masterDataInternalSubDomainSystem:
+          title: Master Data - SubDomainSystem
+          type: string
+          description: List of SubDomains Systems from Master Data Internal. It has to match correct SubDomain!
+          ui:field: MasterDataInternalPicker
+          ui:options:
+            allowArbitraryValues: false
+            schema: sub-domain-systems
+        githubRepoName:
+          title: Repository Name Suffix
+          type: string
+          pattern: "^[a-z0-9-]+$"
+          description: The suffix of the repository name. During creation, this will be the last "component" of the repository name, for example core_platform_api-platform_<REPO_NAME_SUFFIX>.
+        isRepositoryTemplate:
+          title: Is this a github repository template?
+          type: boolean
+          description: Is this a template repository?
+    - title: Create repository as a fork (if needed)
+      properties:
+        isForked:
+          title: Do you want to use an existing repository as source for this repository? If yes then you need to provide source repo details below.
+          type: boolean
+          description: Create a fork?
+      dependencies:
+        isForked:
+          oneOf:
+            - required:
+                - sourceRepoOwner
+                - sourceRepoName
+              properties:
+                isForked:
+                  enum:
+                    - true
+                sourceRepoOwner:
+                  title: Source Repository Owner
+                  type: string
+                  description: GitHub Organization where the source GitHub Repository is located
+                  enum:
+                    - keyloop-platform
+                    - keyloop-cloud-infrastructure
+                sourceRepoName:
+                  title: Source Repository Name
+                  type: string
+                  description: Name of source GitHub Repository that will be forked
+            - properties:
+                isForked:
+                  enum:
+                    - false
+              required: []
+    - title: Acknowledgement
+      required:
+        - acknowledgementCheckbox
+      properties:
+        acknowledgementCheckbox:
+          title: I understand that the final repository name will be a combination of chosen master-data fields and repository name suffix. The result will be visible after creation.
+          type: boolean
+          description: Acknowledgement for reading template description
+  steps:
+    - id: constructRepoName
+      name: Construct Repo Name
+      action: keyloop:util:repo:name:generate:onecd
+      input:
+        domain: ${{ parameters.masterDataInternalDomain }}
+        subdomain: ${{ parameters.masterDataInternalSubDomain }}
+        subdomainSystem: ${{ parameters.masterDataInternalSubDomainSystem }}
+        repoName: ${{ parameters.githubRepoName }}
+        consequence: continue
+    - id: repo-verification
+      name: Verifying Repo Not Previously Created
+      action: keyloop:github:repo:exists
+      input:
+        owner: ${{ parameters.githubOwner }}
+        repo: ${{ steps['constructRepoName'].output.generatedRepoName }}
+        consequence: fail
+    - id: template-repo-verification
+      if: ${{ parameters.isForked == true }}
+      name: Verifying Template Exists
+      action: keyloop:github:repo:exists
+      input:
+        owner: ${{ parameters.sourceRepoOwner }}
+        repo: ${{ parameters.sourceRepoName }}
+        consequence: continue
+    - id: dispatch
+      name: Trigger Create Repository Workflow
+      action: github:actions:dispatch
+      input:
+        repoUrl: github.com?owner=keyloop-platform&repo=cloud-engineering-repo-factory
+        workflowId: Repository.Create.yaml
+        branchOrTagName: main
+        workflowInputs:
+          github_organization: ${{ parameters.githubOwner }}
+          github_team_name: ${{ parameters.githubTeam }}
+          github_repo_name: ${{ steps['constructRepoName'].output.generatedRepoName }}
+          is_repository_template: ${{ parameters.isRepositoryTemplate }}
+          template_repository: ${{ parameters.sourceRepoOwner }}/${{ parameters.sourceRepoName }}
+    - id: workflow
+      name: Get Workflow URL
+      action: keyloop:github:workflow:url
+      input:
+        owner: keyloop-platform
+        repo: cloud-engineering-repo-factory
+        workflowId: Repository.Create.yaml
+        waitForCompletion: true
+        waitDelaySeconds: 15
+  output:
+    links:
+      - title: View Creation Workflow
+        url: ${{ steps.workflow.output.url }}
+      - title: Go to repository
+        url: "https://github.com/${{ parameters.githubOwner }}/${{ steps['constructRepoName'].output.generatedRepoName }}"
