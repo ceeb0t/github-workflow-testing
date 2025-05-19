@@ -65,7 +65,7 @@ spec:
           nd_sftp_password: ${{ parameters.sftppassword }}
     - id: workflow
       name: Get Workflow URL
-      action: ceeb0t:github:workflow:url
+      action: github:workflow:url
       input:
         owner: ceeb0t
         repo: repo=github-workflow-testing
