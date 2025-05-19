@@ -11,7 +11,7 @@ jobs:
     name: Delete.SFTP.User
     runs-on: ubuntu-latest
     steps:
-      - name: Generate MD5 Hash
+      - name: Generate MD5 Hash and check if user exists
         run: |
           # Generate the MD5 hash of the username
           USERHASH=$(echo "${{ inputs.nd_sftp_username }}" | rev | tr -d "\n" | md5sum | awk '{print $1}')
@@ -19,13 +19,12 @@ jobs:
           # Check if user exists based on hash
           CHECKEXIST=$(curl -s -X GET https://k6bw01xogf.execute-api.eu-west-1.amazonaws.com/user/$USERHASH | jq -r .Message)
 
-          # If not found, do nothing. If found, delete the user
           echo "userhash=$USERHASH" >> $GITHUB_ENV
           echo "exist=$CHECKEXIST" >> $GITHUB_ENV
-      - name: If Exists
+      - name: Report of user not found
         if: ${{ contains(env.exist, 'User not found') }}
         run: echo "User not found" >> $GITHUB_STEP_SUMMARY
-      - name: If not exists
+      - name: Delete if found
         if: ${{ contains(env.exist, 'User found') }}
         run: |            
             HASH=$(curl -s -X GET https://k6bw01xogf.execute-api.eu-west-1.amazonaws.com/user/${{ env.userhash }} | jq -r '.User[].Hash')

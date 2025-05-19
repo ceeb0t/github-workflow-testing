@@ -18,7 +18,7 @@ on:
       nd_sftp_bucketpath:
         type: string
         description: Bucket path required
-        required: true
+        required: false
       nd_sftp_password:
         type: string
         description: Password
@@ -28,6 +28,15 @@ jobs:
     name: Add.SFTP.User
     runs-on: ubuntu-latest
     steps:
+      - name: Generate Bucketpath if required
+        id: generate-bucketpath
+        run: |
+          if [ -z "${{ inputs.nd_sftp_bucketpath }}" ]; then
+            BUCKETPATH="${{ inputs.nd_sftp_username }}"
+          else
+            BUCKETPATH="${{ inputs.nd_sftp_bucketpath }}"
+          fi
+          echo "bucketpath=$BUCKETPATH" >> $GITHUB_ENV
       - name: Generate Password if required
         id: generate-password
         run: |
@@ -47,18 +56,17 @@ jobs:
               "Password": "${{ env.password }}",
               "Target": [{
                    "Entry": "${{ inputs.nd_sftp_targetpath }}",
-                   "Target": "/${{ inputs.nd_sftp_bucketname }}/${{ inputs.nd_sftp_bucketpath }}"
+                   "Target": "/${{ inputs.nd_sftp_bucketname }}/${{ env.bucketpath }}"
                }],
                "RoleName": "Production-Transfer-ServiceRole"
             }' | jq -r '.Message')
             echo "outcome=$outcome" >> $GITHUB_ENV
-      - name: Output
-        run: |
-          if [ "${{ env.outcome }}" == "User already exists" ]; then
+      - name: If Exists, skip
+        if: ${{ contains(env.outcome, 'User already exists') }}
+        run: echo "User already exists" >> $GITHUB_STEP_SUMMARY
+      - name: If not exists, create user
+        if: ${{ !contains(env.outcome, 'User already exists') }}
+        run: |            
             echo ${{ env.outcome }} >> $GITHUB_STEP_SUMMARY
-          else
-            echo ${{ env.outcome }}
-            echo "SFTP User Created" >> $GITHUB_STEP_SUMMARY
             echo "Username: ${{ inputs.nd_sftp_username }}" >> $GITHUB_STEP_SUMMARY
             echo "Password: ${{ env.password }}" >> $GITHUB_STEP_SUMMARY
-          fi

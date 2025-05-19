@@ -1,0 +1,17 @@
+name: Get.SFTP.User
+on:
+  workflow_dispatch:
+    inputs:
+      nd_sftp_username:
+        type: string
+        description: Username to be get details for
+        required: true
+jobs:
+  get-sftp-user:
+    name: Get.SFTP.User
+    runs-on:
+      group: ${{ vars.RUNNER_SMALL_GROUP_NAME }}
+    steps:
+      - run: |
+          HASH=$(echo "${{ inputs.nd_sftp_username }}" | rev | tr -d "\n" | md5sum | awk '{print $1}')
+          curl -s -X GET https://k6bw01xogf.execute-api.eu-west-1.amazonaws.com/user/$HASH | jq .
