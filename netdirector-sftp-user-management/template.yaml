@@ -12,11 +12,11 @@ spec:
       enum: &enumActions
         - Create User
         - Delete User
-        - Get User details
+        - Get User
       enumNames: &enumActionsNames
         - Create User
         - Delete User
-        - Get User details
+        - Get User
   parameters:
     - title: Enter user details
       ui:order:
@@ -28,7 +28,7 @@ spec:
         - sftppassword
       properties:
         action:
-          title: Aftion
+          title: Action
           type: string
           description: What action do you want to perform?
           enum: *enumActions
