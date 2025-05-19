@@ -10,7 +10,6 @@ metadata:
 spec:
   owner: phoenix
   type: create
-  
   parameters:
       - title: Enter user details
         ui:order:
@@ -42,15 +41,15 @@ spec:
             type: string
             description: The password of the new user to be created. If not provided, a random password will be generated.
             ui:field: Secret
-          required: [sftpusername, sftbucketname]
+        required: [sftpusername, sftbucketname]
       - title: Acknowledgement
-        required:
-          - acknowledgementCheckbox
         properties:
           acknowledgementCheckbox:
             title: I confirm the details I have entered are correct
             type: boolean
             description: Confirm user details are correct
+        required:
+        - acknowledgementCheckbox
 steps:
     - id: dispatch
       name: Trigger Create SFTP User Workflow
