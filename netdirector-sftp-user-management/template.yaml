@@ -63,16 +63,16 @@ spec:
           nd_sftp_targetpath: ${{ parameters.sfttargetpath }}
           nd_sftp_bucketpath: ${{ parameters.sftpbucketpath }}
           nd_sftp_password: ${{ parameters.sftppassword }}
-    # - id: workflow
-    #   name: Get Workflow URL
-    #   action: keyloop:github:workflow:url
-    #   input:
-    #     owner: keyloop-platform
-    #     repo: internal_devops_sftp-netdirector-user-management
-    #     workflowId: add-sftp-user.yaml
-    #     waitForCompletion: true
-    #     waitDelaySeconds: 15
-  # output:
-  #   links:
-  #     - title: View Creation Workflow
-  #       url: ${{ steps.workflow.output.url }}
+    - id: workflow
+      name: Get Workflow URL
+      action: ceeb0t:github:workflow:url
+      input:
+        owner: ceeb0t
+        repo: repo=github-workflow-testing
+        workflowId: add-sftp-user.yaml
+        waitForCompletion: true
+        waitDelaySeconds: 15
+  output:
+    links:
+      - title: View Creation Workflow
+        url: ${{ steps.workflow.output.url }}
