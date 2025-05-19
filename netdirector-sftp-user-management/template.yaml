@@ -20,13 +20,14 @@ spec:
   parameters:
     - title: Enter user details
       ui:order:
+        - action
         - sftpusername
         - sftbucketname
         - sfttargetpath
         - sftpbucketpath
         - sftppassword
       properties:
-        templateRepo:
+        action:
           title: Aftion
           type: string
           description: What action do you want to perform?
