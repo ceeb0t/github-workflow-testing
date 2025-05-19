@@ -4,12 +4,9 @@ metadata:
   name: sftp-netdirector-user-management
   title: Create New User on sftp.netdirector.auto
   description: Create a new user on sftp.netdirector.auto by providing username, bucket, target path and optional password.
-  # tags:
-  #   - v1
-  #   - rtw
 spec:
   owner: phoenix
-  type: create
+  type: service
   parameters:
       - title: Enter user details
         ui:order:
