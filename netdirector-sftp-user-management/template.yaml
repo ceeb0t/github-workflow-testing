@@ -1,0 +1,80 @@
+apiVersion: scaffolder.backstage.io/v1beta3
+kind: Template
+metadata:
+  name: sftp-netdirector-user-management
+  title: Create New User on sftp.netdirector.auto
+  description: Create a new user on sftp.netdirector.auto by providing username, bucket, target path and optional password.
+  # tags:
+  #   - v1
+  #   - rtw
+spec:
+  owner: phoenix
+  type: create
+  
+  parameters:
+      - title: Enter user details
+        ui:order:
+          - sftpusername
+          - sftbucketname
+          - sfttargetpath
+          - sftpbucketpath
+          - sftppassword
+        properties:
+          sftpusername:
+            title: Username
+            type: string
+            description: The username of the new user to be created
+          sftbucketname:
+            title: Bucket Name
+            type: string
+            description: The name of the bucket you want to use 
+          sftpbucketpath:
+            title: Bucket Path
+            type: string
+            description: The path you want to use relative to the top level of the bucket. By default the username will be used.
+          sfttargetpath:
+            title: Target Path
+            type: string
+            description: Use default unless you understand this option.
+            default: "/"
+          sftppassword:
+            title: Password
+            type: string
+            description: The password of the new user to be created. If not provided, a random password will be generated.
+            ui:field: Secret
+          required: [sftpusername, sftbucketname]
+      - title: Acknowledgement
+        required:
+          - acknowledgementCheckbox
+        properties:
+          acknowledgementCheckbox:
+            title: I confirm the details I have entered are correct
+            type: boolean
+            description: Confirm user details are correct
+steps:
+    - id: dispatch
+      name: Trigger Create SFTP User Workflow
+      action: github:actions:dispatch
+      input:
+        repoUrl: github.com?owner=keyloop-platform&repo=internal_devops_sftp-netdirector-user-management
+        workflowId: add-sftp-user.yaml
+        branchOrTagName: main
+        workflowInputs:
+          nd_sftp_username: ${{ parameters.sftpusername }}
+          nd_sftp_bucketname: ${{ parameters.sftbucketname }}
+          nd_sftp_targetpath: ${{ parameters.sfttargetpath }}
+          nd_sftp_bucketpath: ${{ parameters.sftpbucketpath }}
+          nd_sftp_password: ${{ parameters.sftppassword }}
+    - id: workflow
+      name: Get Workflow URL
+      action: keyloop:github:workflow:url
+      input:
+        owner: keyloop-platform
+        repo: internal_devops_sftp-netdirector-user-management
+        workflowId: add-sftp-user.yaml
+        waitForCompletion: true
+        waitDelaySeconds: 15
+output:
+    links:
+      - title: View Creation Workflow
+        url: ${{ steps.workflow.output.url }}
