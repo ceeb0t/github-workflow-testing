@@ -2,11 +2,21 @@ apiVersion: scaffolder.backstage.io/v1beta3
 kind: Template
 metadata:
   name: sftp-netdirector-user-management
-  title: Create user on sftp.netdirector.auto
+  title: user on sftp.netdirector.auto
   description: Create a new user on sftp.netdirector.auto by providing username, bucket, target path and optional password.
 spec:
   owner: guests
   type: service
+  definitions:
+    enumTemplates:
+      enum: &enumActions
+        - Create User
+        - Delete User
+        - Get User details
+      enumNames: &enumActionsNames
+        - Create User
+        - Delete User
+        - Get User details
   parameters:
     - title: Enter user details
       ui:order:
@@ -16,6 +26,12 @@ spec:
         - sftpbucketpath
         - sftppassword
       properties:
+        templateRepo:
+          title: Aftion
+          type: string
+          description: What action do you want to perform?
+          enum: *enumActions
+          enumNames: &enumActionsNames
         sftpusername:
           title: Username
           type: string
