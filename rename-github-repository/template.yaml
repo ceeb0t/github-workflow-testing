@@ -1,0 +1,128 @@
+apiVersion: scaffolder.backstage.io/v1beta3
+kind: Template
+metadata:
+  name: rename-github-repository
+  title: Rename GitHub Repository
+  description: Rename existing GitHub Repository to name compliant with naming rules. For more information, see https://platform-docs.keyloop.io/internal/remote-content/cloud-first/products/BackstageTemplates/RenameRepo/docs/
+  tags:
+    - git-repo-ops
+    - rtw
+spec:
+  owner: phoenix
+  type: migration
+  presentation:
+    buttonLabels:
+      createButtonText: 'Rename'
+
+  parameters:
+    - title: Select a GitHub Organization, Team, and provide a Repository Name
+      required:
+        - githubOwner
+        - githubTeam
+        - githubOldRepoName
+      properties:
+        githubOwner:
+          title: GitHub Organization
+          type: string
+          description: GitHub Organization where the repository belongs
+          enum:
+            - keyloop-platform
+        githubTeam:
+          title: Team
+          type: string
+          description: GitHub Team that owns the repo
+          ui:field: GithubOrgTeamsPicker
+          ui:options:
+            allowArbitraryValues: false
+        githubOldRepoName:
+          title: Existing Repository Name
+          type: string
+          description: Current name for the repository
+    - title: Select a Domain and Subdomain for the repo
+      required:
+        - githubRepoName
+        - masterDataInternalDomain
+        - masterDataInternalSubDomain
+      properties:
+        masterDataInternalDomain:
+          title: Master Data - Domain
+          type: string
+          description: List of Domains from Master Data Internal
+          ui:field: MasterDataInternalPicker
+          ui:options:
+            allowArbitraryValues: false
+            schema: domains
+        masterDataInternalSubDomain:
+          title: Master Data - SubDomain
+          type: string
+          description:
+            List of SubDomains from Master Data Internal. It has to match
+            correct Domain!
+          ui:field: MasterDataInternalPicker
+          ui:options:
+            allowArbitraryValues: false
+            schema: sub-domains
+        masterDataInternalSubDomainSystem:
+          title: Master Data - SubDomainSystem
+          type: string
+          description:
+            List of SubDomains Systems from Master Data Internal. It has to
+            match correct SubDomain!
+          ui:field: MasterDataInternalPicker
+          ui:options:
+            allowArbitraryValues: false
+            schema: sub-domain-systems
+        githubRepoName:
+          title: New Repository Name Suffix
+          type: string
+          pattern: "^[a-z0-9-]+$"
+          description: The suffix of the repository name. During creation, this will be the last "component" of the repository name, for example core_platform_api-platform_<REPO_NAME_SUFFIX>.
+        createSonarbox:
+          title: Create SonarCloud project if it doesn't exist
+          description: This param creates project in sonarcloud.io, without additional repository configuration
+          type: boolean
+  steps:
+    - id: constructRepoName
+      name: Construct Repo Name
+      action: keyloop:util:repo:name:generate:onecd
+      input:
+        domain: ${{ parameters.masterDataInternalDomain }}
+        subdomain: ${{ parameters.masterDataInternalSubDomain }}
+        subdomainSystem: ${{ parameters.masterDataInternalSubDomainSystem }}
+        repoName: ${{ parameters.githubRepoName }}
+        consequence: continue
+    - id: repo-verification
+      name: Verifying Repo Exists
+      action: keyloop:github:repo:exists
+      input:
+        owner: ${{ parameters.githubOwner }}
+        repo: ${{ parameters.githubOldRepoName }}
+        consequence: continue
+    - id: dispatch
+      name: Trigger Rename Repository Workflow
+      action: github:actions:dispatch
+      input:
+        repoUrl: github.com?owner=keyloop-platform&repo=cloud-engineering-repo-factory
+        workflowId: Repository.Rename.yaml
+        branchOrTagName: main
+        workflowInputs:
+          github_old_repo_name: ${{ parameters.githubOldRepoName}}
+          github_organization: ${{ parameters.githubOwner }}
+          github_team_name: ${{ parameters.githubTeam }}
+          github_new_repo_name: ${{ steps['constructRepoName'].output.generatedRepoName }}
+          create_sonar_project: ${{ parameters.createSonarbox }}
+    - id: workflow
+      name: Get Workflow URL
+      action: keyloop:github:workflow:url
+      input:
+        owner: keyloop-platform
+        repo: cloud-engineering-repo-factory
+        workflowId: Repository.Rename.yaml
+        waitForCompletion: true
+        waitDelaySeconds: 15
+  output:
+    links:
+      - title: View Migration Workflow
+        url: ${{ steps.workflow.output.url }}
+      - title: Go to repository
+        url: "https://github.com/${{ parameters.githubOwner }}/${{ steps['constructRepoName'].output.generatedRepoName }}"
