@@ -51,7 +51,7 @@ spec:
         - acknowledgementCheckbox
   steps:
     - id: dispatch
-      name: Trigger Create SFTP User Workflow
+      name: Start create user workflow
       action: github:actions:dispatch
       input:
         repoUrl: github.com?owner=ceeb0t&repo=github-workflow-testing
