@@ -5,7 +5,7 @@ metadata:
   title: Create New User on sftp.netdirector.auto
   description: Create a new user on sftp.netdirector.auto by providing username, bucket, target path and optional password.
 spec:
-  owner: ceeb0t
+  owner: guests
   type: service
   parameters:
     - title: Enter user details
