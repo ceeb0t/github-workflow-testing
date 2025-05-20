@@ -28,7 +28,7 @@ spec:
           type: string
           description: What user action do you want to perform?
           enum: *enumActions
-        dependencies:
+      dependencies:
           action:
             allOf:
               - if:
