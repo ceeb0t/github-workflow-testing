@@ -94,6 +94,7 @@ spec:
         - acknowledgementCheckbox
   steps:
     - id: dispatch
+      if: ${{ parameters.action == 'Create User' }}
       name: Start create user workflow
       action: github:actions:dispatch
       input:
@@ -106,6 +107,16 @@ spec:
           nd_sftp_targetpath: ${{ parameters.sftptargetpath }}
           nd_sftp_bucketpath: ${{ parameters.sftpbucketpath }}
           nd_sftp_password: ${{ parameters.sftppassword }}
+    - id: dispatch
+      if:  ${{ parameters.action == 'Delete User' }}
+      name: Start delete user workflow
+      action: github:actions:dispatch
+      input:
+        repoUrl: github.com?owner=ceeb0t&repo=github-workflow-testing
+        workflowId: add-del-user.yaml
+        branchOrTagName: main
+        workflowInputs:
+          nd_sftp_username: ${{ parameters.sftpusername }}
   #   - id: workflow
   #     name: Get Workflow URL
   #     action: ceeb0t:github:workflow:url
