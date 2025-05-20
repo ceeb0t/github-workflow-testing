@@ -113,7 +113,7 @@ spec:
       action: github:actions:dispatch
       input:
         repoUrl: github.com?owner=ceeb0t&repo=github-workflow-testing
-        workflowId: add-del-user.yaml
+        workflowId: del-sftp-user.yaml
         branchOrTagName: main
         workflowInputs:
           nd_sftp_username: ${{ parameters.sftpusername }}
