@@ -117,6 +117,16 @@ spec:
         branchOrTagName: main
         workflowInputs:
           nd_sftp_username: ${{ parameters.sftpusername }}
+    - id: dispatch
+      if:  ${{ parameters.action == 'Get User' }}
+      name: Start get user workflow
+      action: github:actions:dispatch
+      input:
+        repoUrl: github.com?owner=ceeb0t&repo=github-workflow-testing
+        workflowId: get-sftp-user.yaml
+        branchOrTagName: main
+        workflowInputs:
+          nd_sftp_username: ${{ parameters.sftpusername }}
   #   - id: workflow
   #     name: Get Workflow URL
   #     action: ceeb0t:github:workflow:url
