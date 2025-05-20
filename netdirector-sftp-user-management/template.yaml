@@ -40,13 +40,6 @@ spec:
               required:
                 - lastName
     - title: Enter user details
-      ui:order:
-        - action
-        - sftpusername
-        - sftbucketname
-        - sfttargetpath
-        - sftpbucketpath
-        - sftppassword
       properties:
         multiline:
           title: Text area input
