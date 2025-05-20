@@ -13,70 +13,77 @@ spec:
         - Create User
         - Delete User
         - Get User
-      enumNames: &enumActionsNames
-        - Create User
-        - Delete User
-        - Get User
   parameters:
-    - title: Fill in some steps
+    - title: Choose action and complete the form
       ui:order:
         - action
-        - lastName
-        - address
-      properties:
-        action:
-          title: Action
-          type: string
-          description: What action do you want to perform?
-          enum: *enumActions
-          enumNames: &enumActionsNames
-      dependencies:
-        action:
-          allOf:
-            - if:
-                properties:
-                  action:
-                    enum: [Create User]
-                    enumNames: [Create User]
-              then:
-                properties:
-                  lastName:
-                    title: Name
-                    type: string
-                  address:
-                    title: Address
-                    type: string
-                required:
-                  - lastName
-                  - address
-    - title: Enter user details
-      properties:
-
-        sftpusername:
-          title: Username
-          type: string
-          description: The username of the new user to be created
-        sftbucketname:
-          title: Bucket Name
-          type: string
-          description: The name of the bucket you want to use 
-        sftpbucketpath:
-          title: Bucket Path
-          type: string
-          description: The path you want to use relative to the top level of the bucket. By default the username will be used.
-        sfttargetpath:
-          title: Target Path
-          type: string
-          description: Use default unless you understand this option.
-          default: "/"
-        sftppassword:
-          title: Password
-          type: string
-          description: The password of the new user to be created. If not provided, a random password will be generated.
-          ui:field: Secret
-      required:
         - sftpusername
-        - sftbucketname
+        - sftpbucketname 
+        - sftpbucketpath
+        - sftptargetpath
+        - sftppassword
+      properties:
+        action:
+          title: User Action
+          type: string
+          description: What user action do you want to perform?
+          enum: *enumActions
+        dependencies:
+          action:
+            allOf:
+              - if:
+                  properties:
+                    action:
+                      enum: [Create User]
+                then:
+                  properties:
+                    sftpusername:
+                      title: Username
+                      type: string
+                      description: The username to be created                    
+                    sftpbucketname:
+                      title: Bucket Name
+                      type: string
+                      description: The name of the bucket you want to use
+                    sftpbucketpath:   
+                      title: Bucket Path
+                      type: string
+                      description: The path you want to use relative to the top level of the bucket. By default the username will be used.
+                    sftptargetpath:
+                      title: Target Path
+                      type: string
+                      description: Use default unless you understand this option.
+                    sftppassword: 
+                      title: Password
+                      type: string
+                      description: The password of the new user to be created. If not provided, a random password will be generated.
+                  required:
+                    - sftpusername
+                    - sftpbucketname
+              - if:
+                  properties:
+                    action:
+                      enum: [Delete User]
+                then:
+                  properties:
+                    sftpusername:
+                      title: Usename
+                      type: string
+                      description: The user to be deleted
+                  required:
+                    - sftpusername
+              - if:
+                  properties:
+                    action:
+                      enum: [Get User]
+                then:
+                  properties:
+                    sftpusername:
+                      title: Usename
+                      type: string
+                      description: The user to be get details for
+                  required:
+                    - sftbucketname
     - title: Acknowledgement
       properties:
         acknowledgementCheckbox:
@@ -95,8 +102,8 @@ spec:
         branchOrTagName: main
         workflowInputs:
           nd_sftp_username: ${{ parameters.sftpusername }}
-          nd_sftp_bucketname: ${{ parameters.sftbucketname }}
-          nd_sftp_targetpath: ${{ parameters.sfttargetpath }}
+          nd_sftp_bucketname: ${{ parameters.sftpbucketname }}
+          nd_sftp_targetpath: ${{ parameters.sftptargetpath }}
           nd_sftp_bucketpath: ${{ parameters.sftpbucketpath }}
           nd_sftp_password: ${{ parameters.sftppassword }}
   #   - id: workflow
