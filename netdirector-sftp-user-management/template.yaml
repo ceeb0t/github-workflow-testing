@@ -2,10 +2,10 @@ apiVersion: scaffolder.backstage.io/v1beta3
 kind: Template
 metadata:
   name: sftp-netdirector-user-management
-  title: user on sftp.netdirector.auto
-  description: Create a new user on sftp.netdirector.auto by providing username, bucket, target path and optional password.
+  title: Manage User on sftp.netdirector.auto
+  description: Create, Delete or retrieve user information for sftp.netdirector.auto
 spec:
-  owner: guests
+  owner: phoenix
   type: service
   definitions:
     enumTemplates:
