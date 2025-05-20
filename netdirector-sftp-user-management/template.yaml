@@ -18,6 +18,27 @@ spec:
         - Delete User
         - Get User
   parameters:
+    - title: Fill in some steps
+      properties:
+        includeName:
+          title: Include Name?
+          type: boolean
+          default: true
+      dependencies:
+      includeName:
+        allOf:
+          - if:
+              properties:
+                includeName:
+                  const: true
+            then:
+              properties:
+                lastName:
+                  title: Last Name
+                  type: string
+              # You can use additional fields of parameters within conditional parameters such as required.
+              required:
+                - lastName
     - title: Enter user details
       ui:order:
         - action
@@ -27,6 +48,23 @@ spec:
         - sftpbucketpath
         - sftppassword
       properties:
+        multiline:
+          title: Text area input
+          type: string
+          description: Insert your multi line string
+          ui:widget: textarea
+          ui:options:
+            rows: 10
+          ui:help: 'Hint: Make it strong!'
+          ui:placeholder: |
+            apiVersion: backstage.io/v1alpha1
+              kind: Component
+              metadata:
+                name: backstage
+              spec:
+                type: library
+                owner: CNCF
+                lifecycle: experimental
         action:
           title: Action
           type: string
