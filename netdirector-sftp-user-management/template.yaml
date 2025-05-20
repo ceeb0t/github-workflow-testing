@@ -20,9 +20,8 @@ spec:
   parameters:
     - title: Fill in some steps
       ui:order:
-        - includeName
+        - action
         - lastName
-        - includeAddress
         - address
       properties:
         action:
@@ -31,10 +30,6 @@ spec:
           description: What action do you want to perform?
           enum: *enumActions
           enumNames: &enumActionsNames
-        includeName:
-          title: Include Name?
-          type: boolean
-          default: true
       dependencies:
         action:
           allOf:
