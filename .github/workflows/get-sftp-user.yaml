@@ -1,4 +1,4 @@
-name: Get user to NetDirector SFTP via Transfer API
+name: Get.SFTP.User
 on:
   workflow_dispatch:
     inputs:
@@ -7,11 +7,11 @@ on:
         description: Username to be get details for
         required: true
 jobs:
-  submit-data:
-    runs-on: ubuntu-latest
+  get-sftp-user:
+    name: Get.SFTP.User
+    runs-on:
+      group: ${{ vars.RUNNER_SMALL_GROUP_NAME }}
     steps:
       - run: |
           HASH=$(echo "${{ inputs.nd_sftp_username }}" | rev | tr -d "\n" | md5sum | awk '{print $1}')
           curl -s -X GET https://k6bw01xogf.execute-api.eu-west-1.amazonaws.com/user/$HASH | jq .
-    env:
-        USER_NAME: ${{ inputs.nd_sftp_username }}
