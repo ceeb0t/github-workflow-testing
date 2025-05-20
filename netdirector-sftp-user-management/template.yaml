@@ -41,23 +41,6 @@ spec:
                 - lastName
     - title: Enter user details
       properties:
-        multiline:
-          title: Text area input
-          type: string
-          description: Insert your multi line string
-          ui:widget: textarea
-          ui:options:
-            rows: 10
-          ui:help: 'Hint: Make it strong!'
-          ui:placeholder: |
-            apiVersion: backstage.io/v1alpha1
-              kind: Component
-              metadata:
-                name: backstage
-              spec:
-                type: library
-                owner: CNCF
-                lifecycle: experimental
         action:
           title: Action
           type: string
