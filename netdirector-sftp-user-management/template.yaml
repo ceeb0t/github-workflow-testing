@@ -22,11 +22,13 @@ spec:
           type: string
           default: ceeb0t
           ui:field: Secret
+          backstage:featureFlag: disabled
         repo:
           title: Repository Name
           type: string
           default: github-workflow-testing
           ui:field: Secret
+          backstage:featureFlag: disabled
         action:
           title: User Action
           type: string
