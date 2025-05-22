@@ -22,12 +22,11 @@ spec:
         - sftpbucketpath
         - sftptargetpath
         - sftppassword
-        - owner
       properties:
         owner:
           type: string
           default: ceeb0t
-#          backstage:featureFlag: hide-hiddenParam
+          backstage:featureFlag: disable
         repo:
           type: string
           default: github-workflow-testing
