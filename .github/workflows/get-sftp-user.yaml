@@ -29,4 +29,4 @@ jobs:
         if: ${{ !contains(env.exist, 'User not found') }}
         run: OUTCOME=$(curl -s -X GET https://k6bw01xogf.execute-api.eu-west-1.amazonaws.com/user/${{ env.userhash }} | jq -r)
             echo "Configured User Details" >> $GITHUB_STEP_SUMMARY
-            echo $OUTCOME >> $GITHUB_STEP_SUMMARY
+            echo "$OUTCOME" >> $GITHUB_STEP_SUMMARY
