@@ -41,7 +41,7 @@ jobs:
         id: generate-password
         run: |
           if [ -z "${{ inputs.nd_sftp_password }}" ]; then
-            PASSWORD=$(openssl rand 60 | tr -dc 'a-zA-Z0-9' | head -c30)
+            PASSWORD=$(openssl rand -base64 60 | tr -dc 'a-zA-Z0-9' | head -c30)
           else
             PASSWORD="${{ inputs.nd_sftp_password }}"
           fi
