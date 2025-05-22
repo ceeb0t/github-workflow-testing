@@ -9,9 +9,24 @@ on:
 jobs:
   get-sftp-user:
     name: Get.SFTP.User
-    runs-on:
-      group: ${{ vars.RUNNER_SMALL_GROUP_NAME }}
+    runs-on: ubuntu-latest
     steps:
-      - run: |
-          HASH=$(echo "${{ inputs.nd_sftp_username }}" | rev | tr -d "\n" | md5sum | awk '{print $1}')
-          curl -s -X GET https://k6bw01xogf.execute-api.eu-west-1.amazonaws.com/user/$HASH | jq .
+      - name: Check if user exists
+        run: |
+          # Generate the MD5 hash of the username
+          USERHASH=$(echo "${{ inputs.nd_sftp_username }}" | rev | tr -d "\n" | md5sum | awk '{print $1}')
+
+          # Check if user exists based on hash
+          CHECKEXIST=$(curl -s -X GET https://k6bw01xogf.execute-api.eu-west-1.amazonaws.com/user/$USERHASH | jq -r .Message)
+
+          echo "userhash=$USERHASH" >> $GITHUB_ENV
+          echo "exist=$CHECKEXIST" >> $GITHUB_ENV
+      - name: Report on user not found
+        if: ${{ contains(env.exist, 'User not found') }}
+        run: echo "User not found" >> $GITHUB_STEP_SUMMARY          
+
+        - name: Report on user found
+        if: ${{ !contains(env.exist, 'User not found') }}
+        run: OUTCOME=$(curl -s -X GET https://k6bw01xogf.execute-api.eu-west-1.amazonaws.com/user/${{ env.userhash }} | jq -r)
+            echo "Configured User Details" >> $GITHUB_STEP_SUMMARY
+            echo $OUTCOME >> $GITHUB_STEP_SUMMARY
