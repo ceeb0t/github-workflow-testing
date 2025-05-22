@@ -6,7 +6,7 @@ metadata:
   description: Create, Delete or retrieve user information for sftp.netdirector.auto
 spec:
   owner: phoenix
-  type: service
+  type: create
   definitions:
     enumTemplates:
       enum: &enumActions
@@ -23,67 +23,72 @@ spec:
         - sftptargetpath
         - sftppassword
       properties:
+        repoUrl:
+          title: Repository URL
+          type: string
+          description: The URL of the repository to use for the workflow.
+          default: github.com?owner=keyloop-platform&repo=internal_devops_sftp-netdirector-user-management
         action:
           title: User Action
           type: string
           description: What user action do you want to perform?
           enum: *enumActions
       dependencies:
-          action:
-            allOf:
-              - if:
-                  properties:
-                    action:
-                      enum: [Create User]
-                then:
-                  properties:
-                    sftpusername:
-                      title: Username
-                      type: string
-                      description: The username to be created                    
-                    sftpbucketname:
-                      title: Bucket Name
-                      type: string
-                      description: The name of the bucket you want to use
-                    sftpbucketpath:   
-                      title: Bucket Path
-                      type: string
-                      description: The path you want to use relative to the top level of the bucket. By default the username will be used.
-                    sftptargetpath:
-                      title: Target Path
-                      type: string
-                      description: Use default unless you understand this option.
-                    sftppassword: 
-                      title: Password
-                      type: string
-                      description: The password of the new user to be created. If not provided, a random password will be generated.
-                  required:
-                    - sftpusername
-                    - sftpbucketname
-              - if:
-                  properties:
-                    action:
-                      enum: [Delete User]
-                then:
-                  properties:
-                    sftpusername:
-                      title: Usename
-                      type: string
-                      description: The user to be deleted
-                  required:
-                    - sftpusername
-              - if:
-                  properties:
-                    action:
-                      enum: [Get User]
-                then:
-                  properties:
-                    sftpusername:
-                      title: Usename
-                      type: string
-                      description: The user to be get details for
-                  required:
-                    - sftpbucketname
+        action:
+          allOf:
+            - if:
+                properties:
+                  action:
+                    enum: [Create User]
+              then:
+                properties:
+                  sftpusername:
+                    title: Username
+                    type: string
+                    description: The username to be created                    
+                  sftpbucketname:
+                    title: Bucket Name
+                    type: string
+                    description: The name of the bucket you want to use
+                  sftpbucketpath:   
+                    title: Bucket Path
+                    type: string
+                    description: The path you want to use relative to the top level of the bucket. By default the username will be used.
+                  sftptargetpath:
+                    title: Target Path
+                    type: string
+                    description: Use default unless you understand this option.
+                  sftppassword: 
+                    title: Password
+                    type: string
+                    description: The password of the new user to be created. If not provided, a random password will be generated.
+                required:
+                  - sftpusername
+                  - sftpbucketname
+            - if:
+                properties:
+                  action:
+                    enum: [Delete User]
+              then:
+                properties:
+                  sftpusername:
+                    title: Username
+                    type: string
+                    description: The user to be deleted
+                required:
+                  - sftpusername
+            - if:
+                properties:
+                  action:
+                    enum: [Get User]
+              then:
+                properties:
+                  sftpusername:
+                    title: Username
+                    type: string
+                    description: The user to get details for
+                required:
+                  - sftpusername
     - title: Acknowledgement
       properties:
         acknowledgementCheckbox:
@@ -93,12 +98,12 @@ spec:
       required:
         - acknowledgementCheckbox
   steps:
-    - id: dispatch
-      if: ${{ parameters.action == 'Create User' }}
+    - id: dispatch-create
       name: Start create user workflow
+      if: ${{ parameters.action == 'Create User' }}
       action: github:actions:dispatch
       input:
-        repoUrl: github.com?owner=ceeb0t&repo=github-workflow-testing
+        repoUrl: github.com?owner=keyloop-platform&repo=internal_devops_sftp-netdirector-user-management
         workflowId: add-sftp-user.yaml
         branchOrTagName: main
         workflowInputs:
@@ -107,36 +112,62 @@ spec:
           nd_sftp_targetpath: ${{ parameters.sftptargetpath }}
           nd_sftp_bucketpath: ${{ parameters.sftpbucketpath }}
           nd_sftp_password: ${{ parameters.sftppassword }}
-    - id: dispatch
-      if:  ${{ parameters.action == 'Delete User' }}
+    - id: dispatch-delete
       name: Start delete user workflow
+      if:  ${{ parameters.action == 'Delete User' }}
       action: github:actions:dispatch
       input:
-        repoUrl: github.com?owner=ceeb0t&repo=github-workflow-testing
+        repoUrl: github.com?owner=keyloop-platform&repo=internal_devops_sftp-netdirector-user-management
         workflowId: del-sftp-user.yaml
         branchOrTagName: main
         workflowInputs:
           nd_sftp_username: ${{ parameters.sftpusername }}
-    - id: dispatch
-      if:  ${{ parameters.action == 'Get User' }}
+    - id: dispatch-get
       name: Start get user workflow
+      if:  ${{ parameters.action == 'Get User' }}
       action: github:actions:dispatch
       input:
-        repoUrl: github.com?owner=ceeb0t&repo=github-workflow-testing
+        repoUrl: github.com?owner=keyloop-platform&repo=internal_devops_sftp-netdirector-user-management
         workflowId: get-sftp-user.yaml
         branchOrTagName: main
         workflowInputs:
           nd_sftp_username: ${{ parameters.sftpusername }}
-  #   - id: workflow
-  #     name: Get Workflow URL
-  #     action: ceeb0t:github:workflow:url
-  #     input:
-  #       owner: ceeb0t
-  #       repo: repo=github-workflow-testing
-  #       workflowId: add-sftp-user.yaml
-  #       waitForCompletion: true
-  #       waitDelaySeconds: 15
+    # - id: workflow-create
+    #   if: ${{ parameters.action == 'Create User' }}
+    #   name: Get Workflow URL
+    #   action: keyloop:github:workflow:url
+    #   input:
+    #     owner: keyloop-platform
+    #     repo: internal_devops_sftp-netdirector-user-management
+    #     workflowId: add-sftp-user.yaml
+    #     waitForCompletion: true
+    #     waitDelaySeconds: 15
+    # - id: workflow-delete
+    #   if: ${{ parameters.action == 'Delete User' }}
+    #   name: Get Workflow URL
+    #   action: keyloop:github:workflow:url
+    #   input:
+    #     owner: keyloop-platform
+    #     repo: internal_devops_sftp-netdirector-user-management
+    #     workflowId: del-sftp-user.yaml
+    #     waitForCompletion: true
+    #     waitDelaySeconds: 15
+    # - id: workflow-get
+    #   if: ${{ parameters.action == 'Get User' }}
+    #   name: Get Workflow URL
+    #   action: keyloop:github:workflow:url
+    #   input:
+    #     owner: keyloop-platform
+    #     repo: internal_devops_sftp-netdirector-user-management
+    #     workflowId: get-sftp-user.yaml
+    #     waitForCompletion: true
+    #     waitDelaySeconds: 15
+
   output:
     links:
-      - title: View Creation Workflow
-        url: ${{ steps.workflow.output.url }}
+      - title: View Workflow
+        url: ${{ steps.workflow-create.output.url }}
+      - title: View Delete Workflow
+        url: ${{ steps.workflow-delete.output.url }}
+      - title: View Get Workflow  
+        url: ${{ steps.workflow-get.output.url }}
