@@ -83,7 +83,7 @@ spec:
                       type: string
                       description: The user to be get details for
                   required:
-                    - sftbucketname
+                    - sftpbucketname
     - title: Acknowledgement
       properties:
         acknowledgementCheckbox:
