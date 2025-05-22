@@ -21,14 +21,12 @@ spec:
           title: Owner
           type: string
           default: ceeb0t
-          ui:field: Secret
-          backstage:featureFlag: disabled
+          description: The owner of the repository.
         repo:
           title: Repository Name
           type: string
           default: github-workflow-testing
-          ui:field: Secret
-          backstage:featureFlag: disabled
+          description: The name of the repository where the workflows are located.
         action:
           title: User Action
           type: string
