@@ -26,7 +26,7 @@ spec:
         owner:
           type: string
           default: ceeb0t
-          backstage:featureFlag: hide-hiddenParam
+#          backstage:featureFlag: hide-hiddenParam
         repo:
           type: string
           default: github-workflow-testing
