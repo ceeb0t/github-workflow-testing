@@ -25,11 +25,11 @@ spec:
       properties:
         owner:
           type: string
-          default: keyloop-platform
+          default: ceeb0t
           backstage:featureFlag: hide-hiddenParam
         repo:
           type: string
-          default: internal_devops_sftp-netdirector-user-management
+          default: github-workflow-testing
           backstage:featureFlag: hide-hiddenParam
         action:
           title: User Action
