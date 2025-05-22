@@ -23,6 +23,14 @@ spec:
         - sftptargetpath
         - sftppassword
       properties:
+        owner:
+          type: string
+          default: keyloop-platform
+          backstage:featureFlag: hide-hiddenParam
+        repo:
+          type: string
+          default: internal_devops_sftp-netdirector-user-management
+          backstage:featureFlag: hide-hiddenParam
         action:
           title: User Action
           type: string
@@ -86,10 +94,6 @@ spec:
                   - sftpusername
     - title: Acknowledgement
       properties:
-        repoUrl:
-          type: string
-          default: github.com?owner=keyloop-platform&repo=internal_devops_sftp-netdirector-user-management
-          backstage:featureFlag: hide-hiddenParam
         acknowledgementCheckbox:
           title: I confirm the details I have entered are correct
           type: boolean
