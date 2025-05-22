@@ -7,12 +7,6 @@ metadata:
 spec:
   owner: phoenix
   type: create
-  definitions:
-    enumTemplates:
-      enum: &enumActions
-        - Create User
-        - Delete User
-        - Get User
   parameters:
     - title: Choose action and complete the form
       # ui:order:
@@ -24,10 +18,12 @@ spec:
       #   - sftppassword
       properties:
         owner:
+          title: Owner
           type: string
           default: ceeb0t
           ui:field: Secret
         repo:
+          title: Repository Name
           type: string
           default: github-workflow-testing
           ui:field: Secret
@@ -35,7 +31,10 @@ spec:
           title: User Action
           type: string
           description: What user action do you want to perform?
-          enum: *enumActions
+          enum:
+            - Create User
+            - Delete User
+            - Get User
       dependencies:
         action:
           allOf:
@@ -61,10 +60,13 @@ spec:
                     title: Target Path
                     type: string
                     description: Use default unless you understand this option.
+                    default: /
                   sftppassword: 
                     title: Password
                     type: string
                     description: The password of the new user to be created. If not provided, a random password will be generated.
+                    ui:field: Secret
+                    ui:help: 'Hint: Make it strong!'
                 required:
                   - sftpusername
                   - sftpbucketname
