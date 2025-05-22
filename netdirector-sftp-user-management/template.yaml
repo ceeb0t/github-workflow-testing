@@ -87,11 +87,9 @@ spec:
     - title: Acknowledgement
       properties:
         repoUrl:
-          title: Repository URL
           type: string
-          description: The URL of the repository to use for the workflow.
           default: github.com?owner=keyloop-platform&repo=internal_devops_sftp-netdirector-user-management
-          hidden: true
+          backstage:featureFlag: hide-hiddenParam
         acknowledgementCheckbox:
           title: I confirm the details I have entered are correct
           type: boolean
