@@ -15,22 +15,22 @@ spec:
         - Get User
   parameters:
     - title: Choose action and complete the form
-      ui:order:
-        - action
-        - sftpusername
-        - sftpbucketname 
-        - sftpbucketpath
-        - sftptargetpath
-        - sftppassword
+      # ui:order:
+      #   - action
+      #   - sftpusername
+      #   - sftpbucketname 
+      #   - sftpbucketpath
+      #   - sftptargetpath
+      #   - sftppassword
       properties:
         owner:
           type: string
           default: ceeb0t
-          backstage:featureFlag: disable
+          ui:field: Secret
         repo:
           type: string
           default: github-workflow-testing
-          backstage:featureFlag: hide-hiddenParam
+          ui:field: Secret
         action:
           title: User Action
           type: string
@@ -106,7 +106,7 @@ spec:
       if: ${{ parameters.action == 'Create User' }}
       action: github:actions:dispatch
       input:
-        repoUrl: github.com?owner=${{ parameters.owner }}&repo=${{ parameters.repo }}
+        repoUrl: github.com?owner=${{ secrets.owner }}&repo=${{ secrets.repo }}
         workflowId: add-sftp-user.yaml
         branchOrTagName: main
         workflowInputs:
