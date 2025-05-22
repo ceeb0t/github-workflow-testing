@@ -106,7 +106,7 @@ spec:
       if: ${{ parameters.action == 'Create User' }}
       action: github:actions:dispatch
       input:
-        repoUrl: github.com?owner=keyloop-platform&repo=internal_devops_sftp-netdirector-user-management
+        repoUrl: github.com?owner=${{ parameters.owner }}&repo=${{ parameters.repo }}
         workflowId: add-sftp-user.yaml
         branchOrTagName: main
         workflowInputs:
@@ -120,7 +120,7 @@ spec:
       if:  ${{ parameters.action == 'Delete User' }}
       action: github:actions:dispatch
       input:
-        repoUrl: github.com?owner=keyloop-platform&repo=internal_devops_sftp-netdirector-user-management
+        repoUrl: github.com?owner=${{ parameters.owner }}&repo=${{ parameters.repo }}
         workflowId: del-sftp-user.yaml
         branchOrTagName: main
         workflowInputs:
@@ -130,7 +130,7 @@ spec:
       if:  ${{ parameters.action == 'Get User' }}
       action: github:actions:dispatch
       input:
-        repoUrl: github.com?owner=keyloop-platform&repo=internal_devops_sftp-netdirector-user-management
+        repoUrl: github.com?owner=${{ parameters.owner }}&repo=${{ parameters.repo }}
         workflowId: get-sftp-user.yaml
         branchOrTagName: main
         workflowInputs:
