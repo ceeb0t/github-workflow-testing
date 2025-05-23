@@ -108,7 +108,7 @@ spec:
       if: ${{ parameters.action == 'Create User' }}
       action: github:actions:dispatch
       input:
-        repoUrl: github.com?owner=${{ secrets.owner }}&repo=${{ secrets.repo }}
+        repoUrl: github.com?owner=${{ parameters.owner }}&repo=${{ parameters.repo }}
         workflowId: add-sftp-user.yaml
         branchOrTagName: main
         workflowInputs:
@@ -142,9 +142,9 @@ spec:
       name: Get Workflow URL
       action: keyloop:github:workflow:url
       input:
-        owner: keyloop-platform
-        repo: internal_devops_sftp-netdirector-user-management
-        workflowId: add-sftp-user.yaml
+        owner: ${{ parameters.owner }}
+        repo: ${{ parameters.repo }}
+        workflowId: Add.SFTP.User
         waitForCompletion: true
         waitDelaySeconds: 15
     - id: workflow-delete
@@ -152,8 +152,8 @@ spec:
       name: Get Workflow URL
       action: keyloop:github:workflow:url
       input:
-        owner: keyloop-platform
-        repo: internal_devops_sftp-netdirector-user-management
+        owner: ${{ parameters.owner }}
+        repo: ${{ parameters.repo }}
         workflowId: del-sftp-user.yaml
         waitForCompletion: true
         waitDelaySeconds: 15
