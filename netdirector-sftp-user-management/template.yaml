@@ -9,24 +9,26 @@ spec:
   type: create
   parameters:
     - title: Choose action and complete the form
-      # ui:order:
-      #   - action
-      #   - sftpusername
-      #   - sftpbucketname 
-      #   - sftpbucketpath
-      #   - sftptargetpath
-      #   - sftppassword
+      ui:order:
+        - owner
+        - repo
+        - action
+        - sftpusername
+        - sftpbucketname 
+        - sftpbucketpath
+        - sftptargetpath
+        - sftppassword
       properties:
         owner:
           title: Owner
           type: string
-          default: ceeb0t
-          description: The owner of the repository.
+          default: keyloop-platform
+          description: Select a GitHub Org (use default)
         repo:
           title: Repository Name
           type: string
-          default: github-workflow-testing
-          description: The name of the repository where the workflows are located.
+          default: internal_devops_sftp-netdirector-user-management
+          description: Select a GitHub Repo (use default)
         action:
           title: User Action
           type: string
@@ -137,37 +139,36 @@ spec:
         branchOrTagName: main
         workflowInputs:
           nd_sftp_username: ${{ parameters.sftpusername }}
-    - id: workflow-create
-      if: ${{ parameters.action == 'Create User' }}
-      name: Get Workflow URL
-      action: keyloop:github:workflow:url
-      input:
-        owner: ${{ parameters.owner }}
-        repo: ${{ parameters.repo }}
-        workflowId: Add.SFTP.User
-        waitForCompletion: true
-        waitDelaySeconds: 15
-    - id: workflow-delete
-      if: ${{ parameters.action == 'Delete User' }}
-      name: Get Workflow URL
-      action: keyloop:github:workflow:url
-      input:
-        owner: ${{ parameters.owner }}
-        repo: ${{ parameters.repo }}
-        workflowId: del-sftp-user.yaml
-        waitForCompletion: true
-        waitDelaySeconds: 15
-    - id: workflow-get
-      if: ${{ parameters.action == 'Get User' }}
-      name: Get Workflow URL
-      action: keyloop:github:workflow:url
-      input:
-        owner: keyloop-platform
-        repo: internal_devops_sftp-netdirector-user-management
-        workflowId: get-sftp-user.yaml
-        waitForCompletion: true
-        waitDelaySeconds: 15
-
+    # - id: workflow-create
+    #   if: ${{ parameters.action == 'Create User' }}
+    #   name: Get Workflow URL
+    #   action: keyloop:github:workflow:url
+    #   input:
+    #     owner: ${{ parameters.owner }}
+    #     repo: ${{ parameters.repo }}
+    #     workflowId: add-sftp-user.yaml
+    #     waitForCompletion: true
+    #     waitDelaySeconds: 15
+    # - id: workflow-delete
+    #   if: ${{ parameters.action == 'Delete User' }}
+    #   name: Get Workflow URL
+    #   action: keyloop:github:workflow:url
+    #   input:
+    #     owner: ${{ parameters.owner }}
+    #     repo: ${{ parameters.repo }}
+    #     workflowId: del-sftp-user.yaml
+    #     waitForCompletion: true
+    #     waitDelaySeconds: 15
+    # - id: workflow-get
+    #   if: ${{ parameters.action == 'Get User' }}
+    #   name: Get Workflow URL
+    #   action: keyloop:github:workflow:url
+    #   input:
+    #     owner: keyloop-platform
+    #     repo: internal_devops_sftp-netdirector-user-management
+    #     workflowId: get-sftp-user.yaml
+    #     waitForCompletion: true
+    #     waitDelaySeconds: 15
   output:
     links:
       - title: View Workflow
