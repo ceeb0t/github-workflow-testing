@@ -27,6 +27,7 @@ jobs:
 
       - name: Report on user found
         if: ${{ !contains(env.exist, 'User not found') }}
-        run: OUTCOME=$(curl -s -X GET https://k6bw01xogf.execute-api.eu-west-1.amazonaws.com/user/${{ env.userhash }} | jq -r .User[]q)
-            echo "Configured User Details" >> $GITHUB_STEP_SUMMARY
-            echo "$OUTCOME" >> $GITHUB_STEP_SUMMARY
+        run: |
+          outcome=$(curl -s -X GET "https://k6bw01xogf.execute-api.eu-west-1.amazonaws.com/user/${{ env.userhash }}" -H "Content-Type: application/json" | jq -r '.Message')
+          echo "Configured User Details" >> $GITHUB_STEP_SUMMARY
+          echo $outcome | jq -r .User[] >> $GITHUB_STEP_SUMMARY
