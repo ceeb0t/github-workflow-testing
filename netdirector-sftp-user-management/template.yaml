@@ -164,8 +164,8 @@ spec:
     #   name: Get Workflow URL
     #   action: keyloop:github:workflow:url
     #   input:
-    #     owner: keyloop-platform
-    #     repo: internal_devops_sftp-netdirector-user-management
+    #     owner: ${{ parameters.owner }}
+    #     repo: ${{ parameters.repo }}
     #     workflowId: get-sftp-user.yaml
     #     waitForCompletion: true
     #     waitDelaySeconds: 15
