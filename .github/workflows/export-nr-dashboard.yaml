@@ -1,0 +1,32 @@
+name: Export New Relic Dashboard JSON
+
+on:
+  workflow_dispatch:
+
+jobs:
+  export-dashboard:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v3
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '16'
+
+      - name: Install dependencies
+        run: npm install
+
+      - name: Export Dashboard JSON
+        env:
+          NEW_RELIC_API_KEY: ${{ secrets.NEW_RELIC_API_KEY }}
+          DASHBOARD_GUID: ${{ secrets.DASHBOARD_GUID }}
+        run: |
+          node ../export_nr_dashboard/export.js --guid "$DASHBOARD_GUID" --apikey "$NEW_RELIC_API_KEY" --filename "dashboard.json" --format="json"
+
+      - name: Upload dashboard JSON artifact
+        uses: actions/upload-artifact@v3
+        with:
+          name: newrelic-dashboard-json
+          path: ../export_nr_dashboard/dashboard.json
