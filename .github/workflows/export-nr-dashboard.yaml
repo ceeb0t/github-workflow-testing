@@ -26,7 +26,7 @@ jobs:
           node ../export_nr_dashboard/export.js --guid "$DASHBOARD_GUID" --apikey "$NEW_RELIC_API_KEY" --filename "dashboard.json" --format="json"
 
       - name: Upload dashboard JSON artifact
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: newrelic-dashboard-json
           path: ../export_nr_dashboard/dashboard.json
