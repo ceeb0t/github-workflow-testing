@@ -10,42 +10,43 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-    - name: Checkout repository
-      uses: actions/checkout@v3
+      - name: Checkout repository
+        uses: actions/checkout@v3
 
-    - name: Install dependencies
-      run: |
-        sudo apt update
-        sudo apt install -y jq curl
+      - name: Install dependencies
+        run: |
+          sudo apt update
+          sudo apt install -y jq curl
 
-    - name: Fetch host entities from New Relic
-      env:
-        NR_API_KEY: ${{ secrets.NEW_RELIC_API_KEY }}
-      run: |
-        curl -s -X POST https://api.newrelic.com/graphql \
-          -H "Content-Type: application/json" \
-          -H "API-Key: $NR_API_KEY" \
-          -d '{
-            "query": "{
-              actor {
-                entitySearch(query: \"type = \'HOST\'\") {
-                  results {
-                    entities {
-                      name
-                      guid
-                      domain
-                      type
+      - name: Fetch host entities from New Relic
+        env:
+          NR_API_KEY: ${{ secrets.NEW_RELIC_API_KEY }}
+        run: |
+          curl -s -X POST https://api.newrelic.com/graphql \
+            -H "Content-Type: application/json" \
+            -H "API-Key: $NR_API_KEY" \
+            -d '{
+              "query": "{
+                actor {
+                  entitySearch(query: \"type = \'HOST\'\") {
+                    results {
+                      entities {
+                        name
+                        guid
+                        domain
+                        type
+                      }
                     }
                   }
                 }
               }
             }"
-          }' | jq '.data.actor.entitySearch.results.entities' > newrelic_hosts.json
+            }' | jq '.data.actor.entitySearch.results.entities' > newrelic_hosts.json
 
-    - name: Commit host list to repo
-      run: |
-        git config --global user.name "github-actions"
-        git config --global user.email "actions@github.com"
-        git add newrelic_hosts.json
-        git commit -m "Update New Relic host list [skip ci]" || echo "No changes to commit"
-        git push
+      - name: Commit host list to repo
+        run: |
+          git config --global user.name "github-actions"
+          git config --global user.email "actions@github.com"
+          git add newrelic_hosts.json
+          git commit -m "Update New Relic host list [skip ci]" || echo "No changes to commit"
+          git push
