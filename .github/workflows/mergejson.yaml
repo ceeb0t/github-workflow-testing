@@ -14,7 +14,7 @@ jobs:
     - name: Merge all JSON files in configs/ folder
       run: |
         # Merge all .json files in the configs/ directory into merged-config.json
-        jq -s 'reduce .[] as $item ({}; . * $item)' configs/*.json > merged-config.json
+        jq -s 'add' configs/*.json > merged-config.json
 
     - name: Show merged.json result
       run: cat merged-config.json
