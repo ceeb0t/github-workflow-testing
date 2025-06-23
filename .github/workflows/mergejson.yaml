@@ -13,7 +13,7 @@ jobs:
 
     - name: Merge all JSON files in data/ directory
       run: |
-        jq -s 'reduce .[] as $item ({}; . * $item)' data/*.json > merged.json
+        jq -s 'reduce .[] as $item ({}; . * $item)' ../newrelic/*.json > merged.json
 
     - name: Display merged.json
       run: cat merged.json
