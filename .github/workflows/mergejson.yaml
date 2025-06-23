@@ -1,0 +1,32 @@
+name: Merge All JSON Files in Directory
+
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+
+jobs:
+  merge-json:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Merge all JSON files in data/ directory
+      run: |
+        jq -s 'reduce .[] as $item ({}; . * $item)' data/*.json > merged.json
+
+    - name: Display merged.json
+      run: cat merged.json
+
+    - name: Commit and push merged.json
+      run: |
+        git config user.name "github-actions"
+        git config user.email "github-actions@github.com"
+        git add merged.json
+        git commit -m "Merge all JSON files into merged.json"
+        git push
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
