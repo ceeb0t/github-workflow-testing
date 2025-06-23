@@ -1,6 +1,9 @@
-name: Merge All JSON Files in Directory
+name: Merge All JSON Files in Root
 
 on:
+  push:
+    branches:
+      - main
   workflow_dispatch:
 
 jobs:
@@ -8,14 +11,15 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-    - name: Checkout code
+    - name: Checkout repository
       uses: actions/checkout@v4
 
-    - name: Merge all JSON files in data/ directory
+    - name: Merge all JSON files in root directory
       run: |
-        jq -s 'reduce .[] as $item ({}; . * $item)' ../newrelic/*.json > merged.json
+        # Merge all .json files in the root directory into merged.json
+        jq -s 'reduce .[] as $item ({}; . * $item)' *.json > merged.json
 
-    - name: Display merged.json
+    - name: Show merged.json result
       run: cat merged.json
 
     - name: Commit and push merged.json
@@ -23,7 +27,7 @@ jobs:
         git config user.name "github-actions"
         git config user.email "github-actions@github.com"
         git add merged.json
-        git commit -m "Merge all JSON files into merged.json"
+        git commit -m "Auto-merged JSON files from root"
         git push
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
