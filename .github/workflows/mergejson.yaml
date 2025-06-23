@@ -1,9 +1,6 @@
 name: Merge All JSON Files in Directory
 
 on:
-  push:
-    branches:
-      - main
   workflow_dispatch:
 
 jobs:
