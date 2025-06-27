@@ -22,3 +22,13 @@ cat master/dashboard_master.json *.json | jq -s '
     | .variables = ((.variables // []) + ($item.variables // []) | unique)
   )
 ' > newfile.txt
+
+
+cat module-dashboard.json.tftpl ./customPages/*.tftpl | jq -s '
+  reduce .[] as $item (
+    {}; 
+    . * $item 
+    | .pages = ((.pages // []) + ($item.pages // []) | unique) 
+    | .variables = ((.variables // []) + ($item.variables // []) | unique)
+  )
+  ' > merged-dashboard.tftp
